@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'itinerary_page.dart';
 
 class JoinTripPage extends StatelessWidget {
   const JoinTripPage({super.key});
@@ -27,10 +28,11 @@ class JoinTripPage extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           itemCount: trips.length,
           itemBuilder: (context, index) {
-            final trip = trips[index].data() as Map<String, dynamic>;
+            final tripData = trips[index].data() as Map<String, dynamic>;
+            final docId = trips[index].id;
 
-            final startDate = (trip['startDate'] as Timestamp).toDate();
-            final endDate = (trip['endDate'] as Timestamp).toDate();
+            final startDate = (tripData['startDate'] as Timestamp).toDate();
+            final endDate = (tripData['endDate'] as Timestamp).toDate();
 
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
@@ -38,22 +40,28 @@ class JoinTripPage extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
                 title: Text(
-                  trip['name'] ?? 'Unnamed Trip',
+                  tripData['name'] ?? 'Unnamed Trip',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  "From ${trip['startLocation']} to ${trip['endLocation']}\n"
+                  "From ${tripData['startLocation']} to ${tripData['endLocation']}\n"
                   "${DateFormat.yMMMd().format(startDate)} - ${DateFormat.yMMMd().format(endDate)}\n"
-                  "Cost: \$${trip['cost']}",
+                  "Cost: \$${tripData['cost']}",
                 ),
                 isThreeLine: true,
                 trailing: ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Join functionality coming soon!"),
-                    ));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ItineraryPage(
+                          tripId: docId,
+                          tripName: tripData['name'] ?? '',
+                        ),
+                      ),
+                    );
                   },
-                  child: const Text("Join"),
+                  child: const Text("View Itinerary"),
                 ),
               ),
             );
