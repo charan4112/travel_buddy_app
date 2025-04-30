@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'chat_page.dart';
 import 'itinerary_page.dart';
 
 class JoinTripPage extends StatelessWidget {
@@ -49,19 +50,39 @@ class JoinTripPage extends StatelessWidget {
                   "Cost: \$${tripData['cost']}",
                 ),
                 isThreeLine: true,
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ItineraryPage(
-                          tripId: docId,
-                          tripName: tripData['name'] ?? '',
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text("View Itinerary"),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ItineraryPage(
+                              tripId: docId,
+                              tripName: tripData['name'] ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text("Itinerary"),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChatPage(
+                              tripId: docId,
+                              tripName: tripData['name'] ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text("Chat"),
+                    ),
+                  ],
                 ),
               ),
             );
