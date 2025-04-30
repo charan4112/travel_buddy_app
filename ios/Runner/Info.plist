@@ -47,3 +47,8 @@
 	<true/>
 </dict>
 </plist>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show nearby attractions.</string>
+<key>io.flutter.embedded_views_preview</key>
+<true/>
