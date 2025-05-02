@@ -13,16 +13,16 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
+  static const List<Widget> _pages = <Widget>[
     CreateTripPage(),         // Trips tab
     NearbyAttractionsPage(),  // Explore tab
     ProfilePage(),            // Profile tab
   ];
 
-  final List<String> _titles = [
-    "My Trips",
-    "Explore",
-    "Profile",
+  static const List<String> _titles = <String>[
+    'My Trips',
+    'Explore',
+    'Profile',
   ];
 
   void _onItemTapped(int index) {
@@ -45,11 +45,11 @@ class _DashboardPageState extends State<DashboardPage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.travel_explore),
+            icon: Icon(Icons.card_travel),
             label: 'Trips',
           ),
           BottomNavigationBarItem(
