@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dashboard_page.dart';
-import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,15 +28,9 @@ class _LoginPageState extends State<LoginPage> {
         email: _email.text.trim(),
         password: _password.text.trim(),
       );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const DashboardPage()),
-      );
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
+      setState(() => _errorMessage = e.message);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -67,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(labelText: "Email"),
                 keyboardType: TextInputType.emailAddress,
                 validator: (val) =>
-                    val != null && val.contains("@") ? null : "Enter valid email",
+                    val != null && val.contains("@") ? null : "Enter a valid email",
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -75,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(labelText: "Password"),
                 obscureText: true,
                 validator: (val) =>
-                    val != null && val.length >= 6 ? null : "Min 6 characters",
+                    val != null && val.length >= 6 ? null : "Minimum 6 characters",
               ),
               const SizedBox(height: 30),
               if (_errorMessage != null)
@@ -89,15 +81,15 @@ class _LoginPageState extends State<LoginPage> {
                     : const Text("Log In"),
               ),
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ForgotPasswordPage(),
-                    ),
-                  );
-                },
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/forgot'),
                 child: const Text("Forgot Password?"),
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/signup'),
+                child: const Text("Don’t have an account? Sign Up"),
               ),
             ],
           ),
