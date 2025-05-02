@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
-import 'signup_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -15,6 +13,7 @@ class WelcomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
+
             const Text(
               'Welcome to Travel Buddy!',
               style: TextStyle(
@@ -24,26 +23,32 @@ class WelcomePage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 20),
+
+            // Local asset image
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                'https://i.pinimg.com/564x/2c/95/5e/2c955e5ae0ec9e5c15c080fa86a81a38.jpg',
+              child: Image.asset(
+                'assets/images/welcome.jpg',
                 height: 250,
                 fit: BoxFit.cover,
               ),
             ),
+
             const SizedBox(height: 20),
+
             const Text(
               'Plan your trips, connect with travelers,\nand explore the world together.',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
+
             const Spacer(),
+
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()));
+                Navigator.pushNamed(context, '/login');
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
@@ -51,11 +56,12 @@ class WelcomePage extends StatelessWidget {
               ),
               child: const Text('Log In', style: TextStyle(fontSize: 18)),
             ),
+
             const SizedBox(height: 12),
+
             OutlinedButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const SignupPage()));
+                Navigator.pushNamed(context, '/signup');
               },
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
@@ -63,6 +69,7 @@ class WelcomePage extends StatelessWidget {
               ),
               child: const Text('Sign Up', style: TextStyle(fontSize: 18)),
             ),
+
             const SizedBox(height: 30),
           ],
         ),
