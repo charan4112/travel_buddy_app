@@ -5,36 +5,38 @@ class ItineraryPage extends StatefulWidget {
   final String tripId;
   final String tripName;
 
-  const ItineraryPage({super.key, required this.tripId, required this.tripName});
+  const ItineraryPage({
+    super.key,
+    required this.tripId,
+    required this.tripName,
+  });
 
   @override
   State<ItineraryPage> createState() => _ItineraryPageState();
 }
 
 class _ItineraryPageState extends State<ItineraryPage> {
-  final TextEditingController _activity = TextEditingController();
+  final TextEditingController _activityController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _addActivity() async {
-    final activityText = _activity.text.trim();
-    if (activityText.isEmpty) return;
+    final text = _activityController.text.trim();
+    if (text.isEmpty) return;
 
     setState(() => _isLoading = true);
-
     try {
       await FirebaseFirestore.instance
           .collection('trips')
           .doc(widget.tripId)
           .collection('itinerary')
           .add({
-        'activity': activityText,
+        'activity': text,
         'timestamp': Timestamp.now(),
       });
-
-      _activity.clear();
+      _activityController.clear();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
+        SnackBar(content: Text('Error adding activity: $e')),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -43,44 +45,51 @@ class _ItineraryPageState extends State<ItineraryPage> {
 
   @override
   void dispose() {
-    _activity.dispose();
+    _activityController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final itineraryRef = FirebaseFirestore.instance
+    final itineraryStream = FirebaseFirestore.instance
         .collection('trips')
         .doc(widget.tripId)
         .collection('itinerary')
-        .orderBy('timestamp');
+        .orderBy('timestamp')
+        .snapshots();
 
     return Scaffold(
-      appBar: AppBar(title: Text("Itinerary - ${widget.tripName}")),
+      appBar: AppBar(title: Text('Itinerary — ${widget.tripName}')),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: itineraryRef.snapshots(),
+              stream: itineraryStream,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
-                final docs = snapshot.data!.docs;
-
+                final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
-                  return const Center(child: Text("No itinerary items yet."));
+                  return const Center(child: Text('No itinerary items yet.'));
                 }
-
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
-                    final item = docs[index].data() as Map<String, dynamic>;
+                    final data = docs[index].data()! as Map<String, dynamic>;
                     return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
-                        title: Text(item['activity'] ?? "Unnamed activity"),
+                        title: Text(data['activity'] ?? ''),
+                        subtitle: Text(
+                          (data['timestamp'] as Timestamp)
+                              .toDate()
+                              .toLocal()
+                              .toString()
+                              .split('.')[0],
+                          style: const TextStyle(fontSize: 12),
+                        ),
                       ),
                     );
                   },
@@ -88,16 +97,16 @@ class _ItineraryPageState extends State<ItineraryPage> {
               },
             ),
           ),
-          const Divider(),
+          const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _activity,
+                    controller: _activityController,
                     decoration: const InputDecoration(
-                      hintText: "Add activity...",
+                      hintText: 'Add a new activity...',
                     ),
                   ),
                 ),
@@ -108,9 +117,10 @@ class _ItineraryPageState extends State<ItineraryPage> {
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text("Add"),
+                      : const Text('Add'),
                 ),
               ],
             ),
