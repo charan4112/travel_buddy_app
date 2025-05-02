@@ -29,24 +29,23 @@ class TripHistoryPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           final docs = snapshot.data?.docs ?? [];
-
           if (docs.isEmpty) {
             return const Center(child: Text("You haven't created any trips."));
           }
-
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final trip = docs[index].data() as Map<String, dynamic>;
+              final trip = docs[index].data()! as Map<String, dynamic>;
               final startDate = (trip['startDate'] as Timestamp).toDate();
-              final endDate = (trip['endDate'] as Timestamp).toDate();
-
+              final endDate   = (trip['endDate']   as Timestamp).toDate();
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: ListTile(
                   title: Text(trip['name'] ?? 'Unnamed Trip'),
                   subtitle: Text(
