@@ -33,12 +33,14 @@ class JoinTripPage extends StatelessWidget {
             final docId = trips[index].id;
 
             final startDate = (tripData['startDate'] as Timestamp).toDate();
-            final endDate = (tripData['endDate'] as Timestamp).toDate();
+            final endDate   = (tripData['endDate']   as Timestamp).toDate();
 
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
                 title: Text(
                   tripData['name'] ?? 'Unnamed Trip',
