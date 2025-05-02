@@ -11,15 +11,32 @@ class CreateTripPage extends StatefulWidget {
 
 class _CreateTripPageState extends State<CreateTripPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _tripName = TextEditingController();
-  final TextEditingController _startLocation = TextEditingController();
-  final TextEditingController _endLocation = TextEditingController();
-  final TextEditingController _cost = TextEditingController();
-
+  final TextEditingController _tripName       = TextEditingController();
+  final TextEditingController _startLocation  = TextEditingController();
+  final TextEditingController _endLocation    = TextEditingController();
+  final TextEditingController _cost           = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
   bool _isLoading = false;
   String? _message;
+
+  Future<void> _pickDate({required bool isStart}) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          _startDate = picked;
+        } else {
+          _endDate = picked;
+        }
+      });
+    }
+  }
 
   Future<void> _saveTrip() async {
     if (!_formKey.currentState!.validate() || _startDate == null || _endDate == null) {
@@ -40,40 +57,26 @@ class _CreateTripPageState extends State<CreateTripPage> {
       }
 
       await FirebaseFirestore.instance.collection('trips').add({
-        'name': _tripName.text.trim(),
+        'name'         : _tripName.text.trim(),
         'startLocation': _startLocation.text.trim(),
-        'endLocation': _endLocation.text.trim(),
-        'startDate': _startDate,
-        'endDate': _endDate,
-        'cost': double.tryParse(_cost.text.trim()) ?? 0,
-        'userId': user.uid,
-        'createdAt': Timestamp.now(),
+        'endLocation'  : _endLocation.text.trim(),
+        'startDate'    : _startDate,
+        'endDate'      : _endDate,
+        'cost'         : double.tryParse(_cost.text.trim()) ?? 0,
+        'userId'       : user.uid,
+        'createdAt'    : Timestamp.now(),
       });
 
-      setState(() => _message = "Trip created successfully!");
+      setState(() {
+        _message = "Trip created successfully!";
+      });
       _formKey.currentState?.reset();
+      _startDate = null;
+      _endDate = null;
     } catch (e) {
       setState(() => _message = "Error: $e");
     } finally {
       setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _pickDate({required bool isStart}) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startDate = picked;
-        } else {
-          _endDate = picked;
-        }
-      });
     }
   }
 
@@ -100,23 +103,25 @@ class _CreateTripPageState extends State<CreateTripPage> {
               decoration: const InputDecoration(labelText: "Trip Name"),
               validator: (val) => val == null || val.isEmpty ? "Required" : null,
             ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _startLocation,
               decoration: const InputDecoration(labelText: "Start Location"),
               validator: (val) => val == null || val.isEmpty ? "Required" : null,
             ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _endLocation,
               decoration: const InputDecoration(labelText: "End Location"),
               validator: (val) => val == null || val.isEmpty ? "Required" : null,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: Text(_startDate == null
                       ? "Start Date: Not selected"
-                      : "Start: ${_startDate!.toLocal()}".split(" ")[0]),
+                      : "Start: ${_startDate!.toLocal()}".split(' ')[0]),
                 ),
                 TextButton(
                   onPressed: () => _pickDate(isStart: true),
@@ -129,7 +134,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                 Expanded(
                   child: Text(_endDate == null
                       ? "End Date: Not selected"
-                      : "End: ${_endDate!.toLocal()}".split(" ")[0]),
+                      : "End: ${_endDate!.toLocal()}".split(' ')[0]),
                 ),
                 TextButton(
                   onPressed: () => _pickDate(isStart: false),
@@ -137,6 +142,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _cost,
               decoration: const InputDecoration(labelText: "Cost (USD)"),
@@ -148,15 +154,18 @@ class _CreateTripPageState extends State<CreateTripPage> {
               Text(
                 _message!,
                 style: TextStyle(
-                    color: _message!.contains("success")
-                        ? Colors.green
-                        : Colors.red),
+                  color: _message!.contains("success") ? Colors.green : Colors.red,
+                ),
               ),
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _isLoading ? null : _saveTrip,
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
                   : const Text("Create Trip"),
             ),
           ],
